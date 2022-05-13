@@ -1,6 +1,5 @@
-import { Employee, employees } from "./employee.ts";
-import { offices } from "./office.ts";
-import { Assignment } from "./assignment.ts";
+import { Employee, Assignment } from "./types.ts";
+import { transferCountThreshold, offices, employees } from "./condition.ts";
 import { calcError, printAssignments, getOfficeResults } from "./utils.ts";
 
 type Result = {
@@ -9,10 +8,12 @@ type Result = {
   assignments: Assignment[];
 };
 
+// 事前計算
 const sumOfCost = employees.reduce((acc, e) => acc + e.cost, 0);
 const sumOfBudget = offices.reduce((acc, o) => acc + o.budget, 0);
 const idealDiff = (sumOfCost - sumOfBudget) / employees.length;
 
+// 緩和問題の最適解を計算する
 const calcBestError = (assignments: Assignment[]): number => {
   const overOfficeResults = getOfficeResults(assignments).filter(
     ({ office, cost }) => {
@@ -44,13 +45,14 @@ const calcBestError = (assignments: Assignment[]): number => {
   return underError + overError;
 };
 
+// 初期値を設定する
 let bestResult: Result | null = null;
 const results: Result[] = [];
 const unassignedEmployees: Employee[] = [...employees];
 let branchCount = 0;
 let boundCount = 0;
-const transferCountThreshold = 4;
 
+// 深さ優先探索で最適解を探す
 const dfs = (
   assignments: Assignment[],
   unassignedEmployees: Employee[],
@@ -68,7 +70,7 @@ const dfs = (
     return;
   }
 
-  // 緩和問題の最適解が既に見つかっている最良解よりも悪い場合は探索を中断する
+  // 緩和問題の最適解が既に見つかっている最良解よりも悪い場合は以降の探索を中断する
   if (bestResult && bestResult.error < calcBestError(assignments)) {
     boundCount++;
     return;
@@ -83,7 +85,7 @@ const dfs = (
 
   // 分枝を探索する
   offices.forEach((office) => {
-    // 異動数が超過している場合は探索を中断する
+    // 異動数が超過している場合は以降の探索を中断する
     const isTransferred = employee.officeId !== office.id;
     const newTransferCount = transferCount + (isTransferred ? 1 : 0);
     if (newTransferCount > transferCountThreshold) {
@@ -94,6 +96,7 @@ const dfs = (
       employeeId: employee.id,
       officeId: office.id,
     };
+    // 次の深さの分枝を探索する
     dfs([...assignments, assignment], employees, newTransferCount);
   });
 };
@@ -102,6 +105,7 @@ console.time();
 dfs([], unassignedEmployees);
 console.timeEnd();
 
+// 結果を出力する
 console.log(`予算と実績の差: ${sumOfCost - sumOfBudget}`);
 console.log(`分枝数: ${branchCount}`);
 console.log(`限定数: ${boundCount}`);

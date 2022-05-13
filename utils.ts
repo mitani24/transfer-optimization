@@ -1,6 +1,5 @@
-import { employees, Employee } from "./employee.ts";
-import { offices, Office } from "./office.ts";
-import { Assignment } from "./assignment.ts";
+import { Office, Employee, Assignment } from "./types.ts";
+import { offices, employees } from "./condition.ts";
 
 type OfficeResult = {
   office: Office;

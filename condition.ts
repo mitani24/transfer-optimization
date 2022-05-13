@@ -1,9 +1,14 @@
-export type Employee = {
-  id: number;
-  name: string;
-  cost: number;
-  officeId: number;
-};
+import { Office, Employee } from "./types.ts";
+
+export const transferCountThreshold = 4;
+
+export const offices: Office[] = [
+  { id: 0, name: "渋谷", budget: 212 },
+  { id: 1, name: "新宿", budget: 203 },
+  { id: 2, name: "池袋", budget: 194 },
+  { id: 3, name: "青山", budget: 185 },
+  { id: 4, name: "六本木", budget: 176 },
+].sort((a, b) => b.budget - a.budget);
 
 export const employees: Employee[] = [
   { id: 0, name: "安藤", cost: 39, officeId: 0 },
