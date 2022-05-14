@@ -15,3 +15,14 @@ export type Assignment = {
   employeeId: number;
   officeId: number;
 };
+
+export type Combination = {
+  error: number;
+  transferCount: number;
+  assignments: Assignment[];
+};
+
+export type SolvedResult = {
+  optimalResult: Combination;
+  elapsed: number;
+};
